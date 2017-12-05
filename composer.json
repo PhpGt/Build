@@ -1,0 +1,14 @@
+{
+	"name": "phpgt/build",
+	"description": "build",
+	"minimum-stability": "dev",
+	"license": "MIT",
+	"require": {
+	},
+
+	"autoload": {
+		"psr-4": {
+			"Gt\\Build\\": "./src"
+		}
+	}
+}
