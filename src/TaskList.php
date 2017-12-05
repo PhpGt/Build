@@ -11,7 +11,7 @@ class TaskList implements Iterator {
 
 	public function __construct(string $jsonFilePath) {
 		if(!is_file($jsonFilePath)) {
-			throw new MissingBuildFileExcpetion($jsonFilePath);
+			throw new MissingBuildFileException($jsonFilePath);
 		}
 
 		$json = file_get_contents($jsonFilePath);
