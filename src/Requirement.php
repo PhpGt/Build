@@ -9,4 +9,8 @@ class Requirement {
 		$this->name = $name;
 		$this->version = $version;
 	}
+
+	public function check():bool {
+		// TODO: Check if the requirement is installed on the developer's system.
+	}
 }
