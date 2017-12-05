@@ -4,14 +4,18 @@ namespace Gt\Build;
 class Build {
 	/** @var TaskList */
 	protected $taskList;
+	protected $baseDir;
 
-	public function __construct(string $buildConfigPath) {
-		$this->taskList = new TaskList($buildConfigPath);
+	public function __construct(string $buildConfigDir) {
+		$this->baseDir = $buildConfigDir;
+
+		$buildConfigFilePath = $buildConfigDir . "/build.json";
+		$this->taskList = new TaskList($buildConfigFilePath);
 	}
 
 	public function buildAll() {
 		foreach($this->taskList as $pathMatch => $task) {
-			echo "Building $pathMatch!!!";
+			$task->build($this->baseDir);
 		}
 	}
 }
