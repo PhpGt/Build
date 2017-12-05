@@ -4,6 +4,7 @@
 	"minimum-stability": "dev",
 	"license": "MIT",
 	"require": {
+		"webmozart/glob": "^4.1"
 	},
 
 	"autoload": {
