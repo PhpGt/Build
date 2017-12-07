@@ -13,9 +13,14 @@ class Build {
 		$this->taskList = new TaskList($buildConfigFilePath);
 	}
 
-	public function buildAll() {
+	public function buildAll():int {
+		$count = 0;
+
 		foreach($this->taskList as $pathMatch => $task) {
 			$task->build($this->baseDir);
+			$count ++;
 		}
+
+		return $count;
 	}
 }
