@@ -12,7 +12,7 @@ Example usage
 
 build.json:
 
-```
+```json
 {
 	"src/script/**/*.js": {
 		"name": "Babel transpile",
@@ -33,19 +33,22 @@ build.json:
 	},
 	
 	"src/page/**/*.{html|php}": {
-		"name": "Siteman generation",
+		"name": "Sitemap generation",
 		"command": "php vendor/bin/sitemap www/sitemap.xml"
 	}
 }
 ```
 
-Why
----
+Not a dependency manager
+------------------------
 
-This library's primary objective is to provide a client-side build system that is automatically configured for the PHP projects. There are already so many well established client-side dependency managers that it would be a bad idea to introduce one built with PHP. Instead, the problem of dependency management is left to the developer's dependency manager of choice, and this library simply ensures the dependencies are in place, before running the commands.
+This library assumes the configuration of the system is already configured.
+
+The primary objective is to provide a client-side build system that is automatically configured for PHP projects, leaving the configuration of the system down to the developer's choice of client-side dependency management software.
 
 Features at a glance
 --------------------
 
 + One-off builds
 + Background builds (watching the matching files and re-building where necessary)
++ Bring your own client-side dependency manager
