@@ -16,7 +16,8 @@ build.json:
 {
 	"src/script/**/*.js": {
 		"name": "Babel transpile",
-		"command": "./node_modules/.bin/babel src/script/main.js -o www/script.js",
+		"command": "./node_modules/.bin/babel",
+		"args": "src/script/main.js -o www/script.js",
 		"requires": {
 			"node": "^8.4",
 			"@command": "^6.0"
@@ -25,7 +26,8 @@ build.json:
 	
 	"src/style/**/*.scss": {
 		"name": "Sass compilation",
-		"command": "sass src/style/main.scss www/style.css",
+		"command": "sass",
+		"args": "src/style/main.scss www/style.css",
 		"requires": {
 			"ruby": "2.4.2",
 			"@command": "3.5.1"
@@ -34,7 +36,8 @@ build.json:
 	
 	"src/page/**/*.{html|php}": {
 		"name": "Sitemap generation",
-		"command": "php vendor/bin/sitemap www/sitemap.xml"
+		"command": "php vendor/bin/sitemap",
+		"args": "src/page www/sitemap.xml"
 	}
 }
 ```
