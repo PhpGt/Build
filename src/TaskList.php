@@ -9,7 +9,7 @@ class TaskList implements Iterator {
 
 	protected $iteratorKey;
 
-	public function __construct(string $jsonFilePath) {
+	public function __construct(string $jsonFilePath, string $baseDir) {
 		if(!is_file($jsonFilePath)) {
 			throw new MissingBuildFileException($jsonFilePath);
 		}
@@ -22,7 +22,11 @@ class TaskList implements Iterator {
 
 		foreach($obj as $pathMatch => $details) {
 			$this->pathMatches []= $pathMatch;
-			$this->tasks[$pathMatch] = new Task($pathMatch, $details);
+			$this->tasks[$pathMatch] = new Task(
+				$baseDir,
+				$pathMatch,
+				$details
+			);
 		}
 	}
 

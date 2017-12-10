@@ -7,20 +7,32 @@ class Build {
 	protected $baseDir;
 
 	public function __construct(string $buildConfigDir) {
-		$this->baseDir = $buildConfigDir;
-
 		$buildConfigFilePath = $buildConfigDir . "/build.json";
-		$this->taskList = new TaskList($buildConfigFilePath);
+		$this->taskList = new TaskList($buildConfigFilePath, $buildConfigDir);
 	}
 
-	public function buildAll():int {
+	public function check():int {
 		$count = 0;
 
 		foreach($this->taskList as $pathMatch => $task) {
-			$task->build($this->baseDir);
+			$task->check();
 			$count ++;
 		}
 
 		return $count;
+	}
+
+	/**
+	 * @return Task[]
+	 */
+	public function build():array {
+		$updatedTasks = [];
+		foreach($this->taskList as $pathMatch => $task) {
+			if($task->build()) {
+				$updatedTasks []= $task;
+			}
+		}
+
+		return $updatedTasks;
 	}
 }
