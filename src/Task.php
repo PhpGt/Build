@@ -2,6 +2,7 @@
 namespace Gt\Build;
 
 use Webmozart\Glob\Glob;
+use Webmozart\PathUtil\Path;
 
 class Task {
 	protected $absolutePath;
@@ -17,7 +18,11 @@ class Task {
 	public function __construct(string $basePath, string $pathMatch, $details) {
 		$basePath = $this->expandRelativePath($basePath);
 		$this->pathMatch = $pathMatch;
-		$this->absolutePath = $basePath . "/" . $this->pathMatch;
+		$this->absolutePath = implode(DIRECTORY_SEPARATOR, [
+			$basePath,
+			$this->pathMatch,
+		]);
+		$this->absolutePath = Path::canonicalize($this->absolutePath);
 		$this->setDetails($details);
 	}
 
