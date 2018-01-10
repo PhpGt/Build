@@ -15,6 +15,7 @@ class Task {
 	protected $fileHashList = [];
 
 	public function __construct(string $basePath, string $pathMatch, $details) {
+		$basePath = $this->expandRelativePath($basePath);
 		$this->pathMatch = $pathMatch;
 		$this->absolutePath = $basePath . "/" . $this->pathMatch;
 		$this->setDetails($details);
@@ -75,5 +76,16 @@ class Task {
 		if($return !== 0) {
 			throw new TaskExecutionFailureException($fullCommand);
 		}
+	}
+
+	protected function expandRelativePath(string $basePath):string {
+		if($basePath[0] === ".") {
+			$basePath = getcwd() . substr(
+				$basePath,
+				1
+			);
+		}
+
+		return $basePath;
 	}
 }
