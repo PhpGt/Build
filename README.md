@@ -5,7 +5,21 @@ This project provides a system for defining and running client-side build proces
 
 ***
 
-// TODO: Status badges.
+<a href="https://circleci.com/gh/PhpGt/Build" target="_blank">
+	<img src="https://img.shields.io/circleci/project/PhpGt/Build/master.svg?style=flat-square" alt="Build status" />
+</a>
+<a href="https://scrutinizer-ci.com/g/PhpGt/Build" target="_blank">
+	<img src="https://img.shields.io/scrutinizer/g/PhpGt/Build/master.svg?style=flat-square" alt="Code quality" />
+</a>
+<a href="https://scrutinizer-ci.com/g/PhpGt/Build" target="_blank">
+	<img src="https://img.shields.io/scrutinizer/coverage/g/PhpGt/Build/master.svg?style=flat-square" alt="Code coverage" />
+</a>
+<a href="https://packagist.org/packages/PhpGt/Build" target="_blank">
+	<img src="https://img.shields.io/packagist/v/PhpGt/Build.svg?style=flat-square" alt="Current version" />
+</a>
+<a href="http://www.php.gt/Build" target="_blank">
+	<img src="https://img.shields.io/badge/docs-www.php.gt/build-26a5e3.svg?style=flat-square" alt="PHP.G/Build documentation" />
+</a>
 
 Example usage
 -------------
