@@ -8,7 +8,10 @@ class Build {
 
 	public function __construct(string $buildConfigDir) {
 		$buildConfigFilePath = $buildConfigDir . "/build.json";
-		$this->taskList = new TaskList($buildConfigFilePath, $buildConfigDir);
+		$this->taskList = new TaskList(
+			$buildConfigFilePath,
+			$buildConfigDir
+		);
 	}
 
 	public function check():int {

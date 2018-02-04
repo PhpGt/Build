@@ -32,7 +32,7 @@ build.json:
 		"name": "Babel transpile",
 		"command": "./node_modules/.bin/babel",
 		"args": "src/script/main.js -o www/script.js",
-		"requires": {
+		"require": {
 			"node": "^8.4",
 			"@command": "^6.0"
 		}
@@ -42,7 +42,7 @@ build.json:
 		"name": "Sass compilation",
 		"command": "sass",
 		"args": "src/style/main.scss www/style.css",
-		"requires": {
+		"require": {
 			"ruby": "2.4.2",
 			"@command": "3.5.1"
 		}

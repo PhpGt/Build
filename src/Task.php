@@ -15,7 +15,7 @@ class Task {
 
 	protected $fileHashList = [];
 
-	public function __construct(string $basePath, string $pathMatch, $details) {
+	public function __construct(\object $details, string $pathMatch, string $basePath = "") {
 		$basePath = $this->expandRelativePath($basePath);
 		$this->pathMatch = $pathMatch;
 		$this->absolutePath = implode(DIRECTORY_SEPARATOR, [
@@ -56,12 +56,12 @@ class Task {
 		return $changes;
 	}
 
-	protected function setDetails($details):void {
+	protected function setDetails(object $details):void {
 		$this->execute = $details->execute;
 		$this->name = $details->name ?? $details->execute->command;
 
-		if(isset($details->requires)) {
-			foreach($details->requires as $key => $value) {
+		if(isset($details->require)) {
+			foreach($details->require as $key => $value) {
 				$this->requirements []= new Requirement(
 					$key,
 					$value
@@ -84,7 +84,7 @@ class Task {
 	}
 
 	protected function expandRelativePath(string $basePath):string {
-		if($basePath[0] === ".") {
+		if($basePath[0] !== "/") {
 			$basePath = getcwd() . substr(
 				$basePath,
 				1
