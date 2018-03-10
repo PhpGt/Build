@@ -3,7 +3,6 @@ namespace Gt\Build;
 
 class BuildRunner {
 	public static function run(string $path, bool $continue = true):void {
-		require(__DIR__ . "/../vendor/autoload.php");
 		$build = new Build($path);
 		$build->check();
 
