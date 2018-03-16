@@ -1,5 +1,10 @@
 #!/usr/bin/env php
 <?php
-require(__DIR__ . "/../vendor/autoload.php");
+$appRoot = $argv[$argc - 1];
+require(implode(DIRECTORY_SEPARATOR, [
+	$appRoot,
+	"vendor",
+	"autoload.php",
+]));
 array_shift($argv);
 call_user_func_array([Gt\Build\BuildRunner::class, "run"],$argv);
