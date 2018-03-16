@@ -1,10 +1,14 @@
 #!/usr/bin/env php
 <?php
-$appRoot = $argv[$argc - 1];
-require(implode(DIRECTORY_SEPARATOR, [
-	$appRoot,
-	"vendor",
-	"autoload.php",
-]));
+$autoloadLocations = [
+	__DIR__ . "/../../../autoload.php",
+	__DIR__ . "/../vendor/autoload.php",
+];
+foreach($autoloadLocations as $location) {
+	if(file_exists($location)) {
+		require($location);
+		break;
+	}
+}
 array_shift($argv);
 call_user_func_array([Gt\Build\BuildRunner::class, "run"],$argv);
