@@ -7,6 +7,7 @@ class Build {
 	protected $baseDir;
 
 	public function __construct(string $buildConfigDir) {
+		$buildConfigDir = rtrim($buildConfigDir, "/\\");
 		$buildConfigFilePath = $buildConfigDir . "/build.json";
 		$this->taskList = new TaskList(
 			$buildConfigFilePath,
