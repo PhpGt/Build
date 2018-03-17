@@ -96,7 +96,6 @@ class Task {
 		]);
 
 		exec($fullCommand, $output, $return);
-
 		chdir($previousCwd);
 
 		if($return !== 0) {
