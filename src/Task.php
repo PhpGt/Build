@@ -8,6 +8,7 @@ class Task {
 	const MATCH_EVERYTHING = "**/*";
 
 	protected $absolutePath;
+	protected $basePath;
 	protected $pathMatch;
 
 	protected $name;
@@ -23,10 +24,10 @@ class Task {
 		string $pathMatch = self::MATCH_EVERYTHING,
 		string $basePath = ""
 	) {
-		$basePath = $this->expandRelativePath($basePath);
+		$this->basePath = $this->expandRelativePath($basePath);
 		$this->pathMatch = $pathMatch;
 		$this->absolutePath = implode(DIRECTORY_SEPARATOR, [
-			$basePath,
+			$this->basePath,
 			$this->pathMatch,
 		]);
 		$this->absolutePath = Path::canonicalize($this->absolutePath);
@@ -86,6 +87,9 @@ class Task {
 	}
 
 	protected function execute():void {
+		$previousCwd = getcwd();
+		chdir($this->basePath);
+
 		$fullCommand = implode(" ", [
 			$this->execute->command,
 			$this->execute->arguments,
@@ -93,19 +97,33 @@ class Task {
 
 		exec($fullCommand, $output, $return);
 
+		chdir($previousCwd);
+
 		if($return !== 0) {
 			throw new TaskExecutionFailureException($fullCommand);
 		}
 	}
 
 	protected function expandRelativePath(string $basePath):string {
-		if($basePath[0] !== "/") {
+		if(!$this->isAbsolutePath($basePath)) {
 			$basePath = getcwd() . substr(
-					$basePath,
-					1
-				);
+				$basePath,
+				1
+			);
 		}
 
 		return $basePath;
+	}
+
+	protected function isAbsolutePath(string $path):bool {
+		if($path === '') {
+			return false;
+		}
+
+		return
+			// Unix:
+			$path[0] === DIRECTORY_SEPARATOR
+			// Windows:
+			|| preg_match('~\A[A-Z]:(?![^/\\\\])~i',$path) > 0;
 	}
 }

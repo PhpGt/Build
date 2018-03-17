@@ -5,6 +5,11 @@ class BuildRunner {
 	protected static $defaultPath;
 
 	public static function run(string $path, bool $continue = true):void {
+		$workingDirectory = $path;
+		if(is_file($workingDirectory)) {
+			$workingDirectory = dirname($workingDirectory);
+		}
+
 		$path = rtrim($path, "/\\");
 		if(is_dir($path)) {
 			$path .= DIRECTORY_SEPARATOR;
@@ -15,7 +20,7 @@ class BuildRunner {
 			$path = self::$defaultPath;
 		}
 
-		$build = new Build($path);
+		$build = new Build($path, $workingDirectory);
 		$build->check();
 
 		do {

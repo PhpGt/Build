@@ -6,8 +6,8 @@ class Build {
 	protected $taskList;
 	protected $baseDir;
 
-	public function __construct(string $buildPath) {
-		$this->taskList = new TaskList($buildPath);
+	public function __construct(string $buildPath, string $workingDirectory) {
+		$this->taskList = new TaskList($buildPath, $workingDirectory);
 	}
 
 	public function check():int {
