@@ -10,5 +10,33 @@ foreach($autoloadLocations as $location) {
 		break;
 	}
 }
-array_shift($argv);
-call_user_func_array([Gt\Build\BuildRunner::class, "run"],$argv);
+
+$watch = false;
+$path = null;
+$defaultPath = null;
+
+foreach($argv as $i => $arg) {
+	if($i === 0) {
+		continue;
+	}
+
+	if($arg === "--watch"
+	|| $arg === "-w") {
+		$watch = true;
+	}
+
+	if(is_file($arg)) {
+		if(is_null($path)) {
+			$path = $arg;
+		}
+		else if(is_null($defaultPath)) {
+			$defaultPath = $arg;
+		}
+	}
+}
+
+if(!is_null($defaultPath)) {
+	Gt\Build\BuildRunner::setDefault($defaultPath);
+}
+
+Gt\Build\BuildRunner::run($path, $watch);
