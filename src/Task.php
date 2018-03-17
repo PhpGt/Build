@@ -5,6 +5,8 @@ use Webmozart\Glob\Glob;
 use Webmozart\PathUtil\Path;
 
 class Task {
+	const MATCH_EVERYTHING = "**/*";
+
 	protected $absolutePath;
 	protected $pathMatch;
 
@@ -15,7 +17,12 @@ class Task {
 
 	protected $fileHashList = [];
 
-	public function __construct(\object $details, string $pathMatch, string $basePath = "") {
+// TODO: PHP 7.2 object typehint
+	public function __construct(
+		$details,
+		string $pathMatch = self::MATCH_EVERYTHING,
+		string $basePath = ""
+	) {
 		$basePath = $this->expandRelativePath($basePath);
 		$this->pathMatch = $pathMatch;
 		$this->absolutePath = implode(DIRECTORY_SEPARATOR, [
@@ -56,13 +63,21 @@ class Task {
 		return $changes;
 	}
 
-	protected function setDetails(object $details):void {
+	public function createNewRequirement(string $key, string $value):Requirement {
+		return new Requirement(
+			$key,
+			$value
+		);
+	}
+
+// TODO: PHP 7.2 object typehint
+	protected function setDetails($details):void {
 		$this->execute = $details->execute;
 		$this->name = $details->name ?? $details->execute->command;
 
 		if(isset($details->require)) {
 			foreach($details->require as $key => $value) {
-				$this->requirements []= new Requirement(
+				$this->requirements []= $this->createNewRequirement(
 					$key,
 					$value
 				);
