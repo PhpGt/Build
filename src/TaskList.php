@@ -26,7 +26,9 @@ class TaskList implements Iterator {
 		foreach($obj as $pathMatch => $details) {
 			$this->pathMatches []= $pathMatch;
 			$this->tasks[$pathMatch] = new Task(
-				$details, $pathMatch, $baseDir
+				$details,
+				$pathMatch,
+				$baseDir
 			);
 		}
 	}
