@@ -9,9 +9,12 @@ class TaskList implements Iterator {
 
 	protected $iteratorKey;
 
-	public function __construct(string $jsonFilePath, string $baseDir) {
+	public function __construct(string $jsonFilePath, string $baseDir = null) {
 		if(!is_file($jsonFilePath)) {
 			throw new MissingBuildFileException($jsonFilePath);
+		}
+		if(is_null($baseDir)) {
+			$baseDir = dirname($jsonFilePath);
 		}
 
 		$json = file_get_contents($jsonFilePath);

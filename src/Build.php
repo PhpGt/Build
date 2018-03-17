@@ -6,13 +6,14 @@ class Build {
 	protected $taskList;
 	protected $baseDir;
 
-	public function __construct(string $buildConfigDir) {
-		$buildConfigDir = rtrim($buildConfigDir, "/\\");
-		$buildConfigFilePath = $buildConfigDir . "/build.json";
-		$this->taskList = new TaskList(
-			$buildConfigFilePath,
-			$buildConfigDir
-		);
+	public function __construct(string $buildPath) {
+		$buildPath = rtrim($buildPath, "/\\");
+		if(is_dir($buildPath)) {
+			$buildPath .= DIRECTORY_SEPARATOR;
+			$buildPath .= "build.json";
+		}
+
+		$this->taskList = new TaskList($buildPath);
 	}
 
 	public function check():int {
