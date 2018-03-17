@@ -1,5 +1,6 @@
 #!/usr/bin/env php
 <?php
+// Usage: build [--watch|-w] PATH_TO_BUILD_JSON [PATH_TO_DEFAULT_BUILD_JSON]
 $autoloadLocations = [
 	__DIR__ . "/../../../autoload.php",
 	__DIR__ . "/../vendor/autoload.php",
@@ -24,14 +25,11 @@ foreach($argv as $i => $arg) {
 	|| $arg === "-w") {
 		$watch = true;
 	}
-
-	if(is_file($arg)) {
-		if(is_null($path)) {
-			$path = $arg;
-		}
-		else if(is_null($defaultPath)) {
-			$defaultPath = $arg;
-		}
+	else if(is_null($path)) {
+		$path = $arg;
+	}
+	else if(is_null($defaultPath)) {
+		$defaultPath = $arg;
 	}
 }
 
