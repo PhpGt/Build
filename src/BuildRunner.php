@@ -5,6 +5,12 @@ class BuildRunner {
 	protected static $defaultPath;
 
 	public static function run(string $path, bool $continue = true):void {
+		$path = rtrim($path, "/\\");
+		if(is_dir($path)) {
+			$path .= DIRECTORY_SEPARATOR;
+			$path .= "build.json";
+		}
+
 		if(!is_file($path)) {
 			$path = self::$defaultPath;
 		}

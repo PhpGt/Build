@@ -7,12 +7,6 @@ class Build {
 	protected $baseDir;
 
 	public function __construct(string $buildPath) {
-		$buildPath = rtrim($buildPath, "/\\");
-		if(is_dir($buildPath)) {
-			$buildPath .= DIRECTORY_SEPARATOR;
-			$buildPath .= "build.json";
-		}
-
 		$this->taskList = new TaskList($buildPath);
 	}
 
