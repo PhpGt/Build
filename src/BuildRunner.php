@@ -2,7 +2,13 @@
 namespace Gt\Build;
 
 class BuildRunner {
+	protected static $defaultPath;
+
 	public static function run(string $path, bool $continue = true):void {
+		if(!is_file($path)) {
+			$path = self::$defaultPath;
+		}
+
 		$build = new Build($path);
 		$build->check();
 
@@ -16,5 +22,9 @@ class BuildRunner {
 			}
 			usleep(100000);
 		} while($continue);
+	}
+
+	public static function setDefault(string $path):void {
+		self::$defaultPath = $path;
 	}
 }
