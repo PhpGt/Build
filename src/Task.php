@@ -12,7 +12,7 @@ class Task {
 
 	protected $name;
 	/** @var Requirement[] */
-	protected $requirements;
+	protected $requirements = [];
 	protected $execute;
 
 	protected $fileHashList = [];
@@ -101,9 +101,9 @@ class Task {
 	protected function expandRelativePath(string $basePath):string {
 		if($basePath[0] !== "/") {
 			$basePath = getcwd() . substr(
-				$basePath,
-				1
-			);
+					$basePath,
+					1
+				);
 		}
 
 		return $basePath;
