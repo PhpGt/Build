@@ -50,15 +50,15 @@ class Task {
 		$changes = false;
 
 		foreach(Glob::glob($this->absolutePath) as $matchedPath) {
-			$md5 = md5_file($matchedPath);
-			$existingMd5 = $this->fileHashList[$matchedPath] ?? null;
+			$hash = filemtime($matchedPath);
+			$existingHash = $this->fileHashList[$matchedPath] ?? null;
 
-			if($md5 !== $existingMd5) {
+			if($hash !== $existingHash) {
 				$this->execute();
 				$changes = true;
 			}
 
-			$this->fileHashList[$matchedPath] = $md5;
+			$this->fileHashList[$matchedPath] = $hash;
 		}
 
 		return $changes;
