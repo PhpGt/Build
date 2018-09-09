@@ -1,5 +1,5 @@
-Build system for PHP 7 projects.
-================================
+Client-side build system for PHP projects.
+==========================================
 
 This project provides a system for defining and running client-side build processes automatically, using tools already installed by your favourite client-side dependency manager.
 
