@@ -2,9 +2,21 @@
 <?php
 // Usage: build [--watch|-w] PATH_TO_BUILD_JSON [PATH_TO_DEFAULT_BUILD_JSON]
 $autoloadLocations = [
-	__DIR__ . "/../../../autoload.php",
-	__DIR__ . "/../vendor/autoload.php",
+	implode(DIRECTORY_SEPARATOR, [
+		__DIR__,
+		"..",
+		"..",
+		"..",
+		"autoload.php",
+	]),
+	implode(DIRECTORY_SEPARATOR, [
+		__DIR__,
+		"..",
+		"vendor",
+		"autoload.php",
+	]),
 ];
+
 foreach($autoloadLocations as $location) {
 	if(file_exists($location)) {
 		require($location);
