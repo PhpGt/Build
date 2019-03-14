@@ -32,4 +32,5 @@ $application = new Application(
 	new ArgumentList(...$argv),
 	new RunCommand()
 );
+$application->setDefaultCommand("run");
 $application->run();
