@@ -28,7 +28,7 @@ foreach($autoloadLocations as $location) {
 }
 
 $application = new Application(
-	"PHP.Gt client-side build system",
+	"Client-side build system",
 	new ArgumentList(...$argv),
 	new RunCommand()
 );

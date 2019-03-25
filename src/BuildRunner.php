@@ -1,41 +1,65 @@
 <?php
 namespace Gt\Build;
 
-class BuildRunner {
-	protected static $defaultPath;
+use Gt\Cli\Stream;
 
-	public static function run(string $path, bool $continue = true):void {
-		$workingDirectory = $path;
+class BuildRunner {
+	protected $defaultPath;
+	protected $workingDirectory;
+	protected $stream;
+
+	public function __construct($path = null, Stream $stream = null) {
+		if(is_null($path)) {
+			$path = getcwd();
+		}
+		if(is_null($stream)) {
+			$stream = new Stream(
+				"php://stdin",
+				"php://stdout",
+				"php://stderr"
+			);
+		}
+		$this->workingDirectory = $path;
+		$this->stream = $stream;
+	}
+
+	public function setDefault(string $path):void {
+		$this->defaultPath = $path;
+	}
+
+	public function run(string $workingDirectory, bool $continue = true):void {
 		if(is_file($workingDirectory)) {
 			$workingDirectory = dirname($workingDirectory);
 		}
 
-		$path = rtrim($path, "/\\");
-		if(is_dir($path)) {
-			$path .= DIRECTORY_SEPARATOR;
-			$path .= "build.json";
+		$workingDirectory = rtrim($workingDirectory, "/\\");
+		$jsonPath = $workingDirectory;
+		if(is_dir($jsonPath)) {
+			$jsonPath .= DIRECTORY_SEPARATOR;
+			$jsonPath .= "build.json";
 		}
 
-		if(!is_file($path)) {
-			$path = self::$defaultPath;
+		if(!is_file($jsonPath)) {
+			$jsonPath= $this->defaultPath;
 		}
 
-		$build = new Build($path, $workingDirectory);
+		$build = new Build($jsonPath, $workingDirectory);
 		$build->check();
 
 		do {
 			$updates = $build->build();
 
 			foreach($updates as $update) {
-				echo date("Y-m-d H:i:s");
-				echo "\t";
-				echo "Updated: $update" . PHP_EOL;
+				$this->stream->writeLine(
+					date("Y-m-d H:i:s")
+					. "\t"
+					. "Updated: $update"
+				);
 			}
-			usleep(100000);
-		} while($continue);
-	}
 
-	public static function setDefault(string $path):void {
-		self::$defaultPath = $path;
+			// Quarter-second wait:
+			usleep(250000);
+		}
+		while($continue);
 	}
 }

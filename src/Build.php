@@ -6,8 +6,14 @@ class Build {
 	protected $taskList;
 	protected $baseDir;
 
-	public function __construct(string $buildPath, string $workingDirectory) {
-		$this->taskList = new TaskList($buildPath, $workingDirectory);
+	public function __construct(
+		string $jsonFilePath,
+		string $workingDirectory
+	) {
+		$this->taskList = new TaskList(
+			$jsonFilePath,
+			$workingDirectory
+		);
 	}
 
 	public function check():int {
