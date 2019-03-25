@@ -1,6 +1,8 @@
 <?php
 namespace Gt\Build;
 
+use Webmozart\Glob\Glob;
+
 class Build {
 	/** @var TaskList */
 	protected $taskList;
@@ -16,11 +18,19 @@ class Build {
 		);
 	}
 
-	public function check():int {
+	public function check(array &$errors = null):int {
 		$count = 0;
 
 		foreach($this->taskList as $pathMatch => $task) {
-			$task->check();
+			$absolutePathMatch = implode(DIRECTORY_SEPARATOR, [
+				getcwd(),
+				$pathMatch,
+			]);
+			$fileList = Glob::glob($absolutePathMatch);
+			if(!empty($fileList)) {
+				$task->check($errors);
+			}
+
 			$count ++;
 		}
 
@@ -30,10 +40,10 @@ class Build {
 	/**
 	 * @return Task[]
 	 */
-	public function build():array {
+	public function build(array &$errors = null):array {
 		$updatedTasks = [];
 		foreach($this->taskList as $pathMatch => $task) {
-			if($task->build()) {
+			if($task->build($errors)) {
 				$updatedTasks []= $task;
 			}
 		}

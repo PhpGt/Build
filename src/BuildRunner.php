@@ -27,10 +27,9 @@ class BuildRunner {
 		$this->defaultPath = $path;
 	}
 
-	public function run(
-		string $workingDirectory,
-		bool $continue = true
-	):void {
+	public function run(bool $continue = true):void {
+		$workingDirectory = $this->workingDirectory;
+
 		if(is_file($workingDirectory)) {
 			$workingDirectory = dirname($workingDirectory);
 		}
@@ -46,11 +45,23 @@ class BuildRunner {
 			$jsonPath= $this->defaultPath;
 		}
 
+		$startTime = microtime(true);
+
+		$errors = [];
 		$build = new Build($jsonPath, $workingDirectory);
-		$build->check();
+		$build->check($errors);
+
+		if(!empty($errors)) {
+			$this->stream->writeLine("The following errors occurred:", Stream::ERROR);
+
+			foreach($errors as $e) {
+				$this->stream->writeLine(" • " . $e);
+			}
+			exit(1);
+		}
 
 		do {
-			$updates = $build->build();
+			$updates = $build->build($errors);
 
 			foreach($updates as $update) {
 				$this->stream->writeLine(
@@ -60,9 +71,22 @@ class BuildRunner {
 				);
 			}
 
+			foreach($errors as $error) {
+				$this->stream->writeLine(
+					$error,
+					Stream::ERROR
+				);
+			}
+
 			// Quarter-second wait:
 			usleep(250000);
 		}
 		while($continue);
+
+		$deltaTime = round(
+			microtime(true) - $startTime,
+			1
+		);
+		$this->stream->writeLine("Build script completed in $deltaTime seconds");
 	}
 }

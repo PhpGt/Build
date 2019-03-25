@@ -27,22 +27,41 @@ class Requirement {
 		]);
 	}
 
-	public function check():bool {
+	public function check(array &$errors = null):bool {
 		$arg = $this->getArgumentToCheckVersionOfCommand();
 		$versionCommand = implode(" ", [
 			$this->name,
 			$arg,
 		]);
 
-		exec($versionCommand, $output, $return);
+		$descriptor = [
+			0 => ["pipe", "r"],
+			1 => ["pipe", "w"],
+			2 => ["pipe", "w"],
+		];
+		$proc = proc_open($versionCommand, $descriptor, $pipes);
+
+		do {
+			$status = proc_get_status($proc);
+		}
+		while($status["running"]);
+		$return = $status["exitcode"];
+		$output = "";
+
+		$output .= stream_get_contents($pipes[1]);
+		$output .= stream_get_contents($pipes[2]);
+		proc_close($proc);
 
 		if($return !== 0) {
-			throw new VersionCheckException($this->name);
+			if(is_null($errors)) {
+				throw new RequirementMissingException($this->name);
+			}
+			else {
+				$errors []= "Requirement missing: " . $this->name;
+			}
 		}
 
-		$outputString = implode(" ", $output);
-		$versionInstalled = $this->getVersionFromVersionString($outputString);
-
+		$versionInstalled = $this->getVersionFromVersionString($output);
 		return $this->isVersionStringValid($versionInstalled);
 	}
 

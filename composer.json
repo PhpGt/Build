@@ -5,6 +5,7 @@
 
 	"require": {
 		"php": ">=7.2",
+		"ext-json": "*",
 		"phpgt/cli": "1.*",
 		"webmozart/glob": "4.*",
 		"composer/semver": "1.*"

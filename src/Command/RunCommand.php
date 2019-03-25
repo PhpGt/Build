@@ -1,14 +1,22 @@
 <?php
 namespace Gt\Build\Command;
 
+use Gt\Build\BuildRunner;
 use Gt\Cli\Argument\ArgumentValueList;
 use Gt\Cli\Command\Command;
 use Gt\Cli\Parameter\NamedParameter;
 use Gt\Cli\Parameter\Parameter;
+use Gt\Cli\Stream;
 
 class RunCommand extends Command {
 	public function run(ArgumentValueList $arguments = null):void {
-		$this->writeLine("Run command");
+		$stream = new Stream(
+			"php://stdin",
+			"php://stdout",
+			"php://stderr"
+		);
+		$buildRunner = new BuildRunner(getcwd(), $stream);
+		$buildRunner->run(false);
 	}
 
 	public function getName():string {

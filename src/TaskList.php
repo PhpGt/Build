@@ -5,6 +5,7 @@ use Iterator;
 
 class TaskList implements Iterator {
 	protected $pathMatches = [];
+	/** @var array Task[] */
 	protected $tasks = [];
 
 	protected $iteratorKey;
