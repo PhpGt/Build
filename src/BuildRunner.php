@@ -27,7 +27,10 @@ class BuildRunner {
 		$this->defaultPath = $path;
 	}
 
-	public function run(string $workingDirectory, bool $continue = true):void {
+	public function run(
+		string $workingDirectory,
+		bool $continue = true
+	):void {
 		if(is_file($workingDirectory)) {
 			$workingDirectory = dirname($workingDirectory);
 		}
