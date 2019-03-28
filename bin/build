@@ -3,6 +3,7 @@
 use Gt\Build\Command\RunCommand;
 use Gt\Cli\Application;
 use Gt\Cli\Argument\ArgumentList;
+use Gt\Cli\Argument\CommandArgumentList;
 
 $autoloadLocations = [
 	implode(DIRECTORY_SEPARATOR, [
@@ -29,8 +30,7 @@ foreach($autoloadLocations as $location) {
 
 $application = new Application(
 	"Client-side build system",
-	new ArgumentList(...$argv),
+	new CommandArgumentList("run", ...$argv),
 	new RunCommand()
 );
-$application->setDefaultCommand("run");
 $application->run();
