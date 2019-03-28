@@ -86,6 +86,10 @@ class Requirement {
 	}
 
 	protected function isVersionStringValid(string $versionInstalled):bool {
+		if($this->version === "*") {
+			return true;
+		}
+
 		return Semver::satisfies($versionInstalled, $this->version);
 	}
 }
