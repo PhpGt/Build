@@ -3,6 +3,7 @@ namespace Gt\Build;
 
 use Gt\Cli\Stream;
 
+/** Responsible for running all build tasks and optionally watching for changes */
 class BuildRunner {
 	protected $defaultPath;
 	protected $workingDirectory;
@@ -28,8 +29,8 @@ class BuildRunner {
 	}
 
 	public function run(bool $continue = true):void {
+// Find path to JSON configuration file, and normalise the working directory.
 		$workingDirectory = $this->workingDirectory;
-
 		if(is_file($workingDirectory)) {
 			$workingDirectory = dirname($workingDirectory);
 		}
@@ -47,10 +48,15 @@ class BuildRunner {
 
 		$startTime = microtime(true);
 
+// Check that the developer has all the necessary requirements.
+// $errors will be passed by reference to Build::check. Passing an array by
+// reference will suppress exceptions, instead filling the array with error
+// strings for output back to the terminal.
 		$errors = [];
 		$build = new Build($jsonPath, $workingDirectory);
 		$build->check($errors);
 
+// Without the correct requirements, the build runner can't proceed.
 		if(!empty($errors)) {
 			$this->stream->writeLine("The following errors occurred:", Stream::ERROR);
 
@@ -60,6 +66,9 @@ class BuildRunner {
 			exit(1);
 		}
 
+// Infinite loop while $continue is true. This allows for builds to take place
+// as soon as changes happen on the relevant files. It also allows the $continue
+// variable to be changed mid-run by an outside force such as a unit test.
 		do {
 			$updates = $build->build($errors);
 
@@ -67,13 +76,15 @@ class BuildRunner {
 				$this->stream->writeLine(
 					date("Y-m-d H:i:s")
 					. "\t"
-					. "Updated: $update"
+					. "Success: $update"
 				);
 			}
 
 			foreach($errors as $error) {
 				$this->stream->writeLine(
-					$error,
+					date("Y-m-d H:i:s")
+					. "\t"
+					. "Error: $error",
 					Stream::ERROR
 				);
 			}

@@ -18,6 +18,7 @@ class Build {
 		);
 	}
 
+	/** For each task, ensure all requirements are met. */
 	public function check(array &$errors = null):int {
 		$count = 0;
 
@@ -38,7 +39,9 @@ class Build {
 	}
 
 	/**
-	 * @return Task[]
+	 * Executes the commands associated with each build task.
+	 * @return Task[] List of tasks built (some may not need building due to
+	 * having no changes).
 	 */
 	public function build(array &$errors = null):array {
 		$updatedTasks = [];

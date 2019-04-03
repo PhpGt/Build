@@ -18,6 +18,11 @@ class Task {
 
 	protected $fileHashList = [];
 
+	/**
+	 * @param object $details Details from the JSON data for this task
+	 * @param string $pathMatch Glob pattern for files to check for changes
+	 * @param string $basePath Path within project directory to check
+	 */
 	public function __construct(
 		object $details,
 		string $pathMatch = self::MATCH_EVERYTHING,
@@ -121,9 +126,7 @@ class Task {
 				throw new TaskExecutionFailureException($fullCommand);
 			}
 			else {
-				$errors []= "ERROR executing "
-					. $this->execute->command
-					. ": "
+				$errors []= $this->execute->command
 					. PHP_EOL
 					. $output;
 			}

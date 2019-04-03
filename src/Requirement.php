@@ -82,7 +82,7 @@ class Requirement {
 		}
 
 		preg_match($pattern, $string, $matches);
-		return $matches[1];
+		return $matches[1] ?? "0.0.0";
 	}
 
 	protected function isVersionStringValid(string $versionInstalled):bool {

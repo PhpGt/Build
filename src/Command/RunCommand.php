@@ -16,7 +16,7 @@ class RunCommand extends Command {
 			"php://stderr"
 		);
 		$buildRunner = new BuildRunner(getcwd(), $stream);
-		$buildRunner->run(false);
+		$buildRunner->run($arguments->contains("watch"));
 	}
 
 	public function getName():string {

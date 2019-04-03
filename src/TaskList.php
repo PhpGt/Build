@@ -1,6 +1,7 @@
 <?php
 namespace Gt\Build;
 
+use Gt\Build\Detail\Manifest;
 use Iterator;
 
 class TaskList implements Iterator {
@@ -11,13 +12,11 @@ class TaskList implements Iterator {
 	protected $iteratorKey;
 
 	public function __construct(string $jsonFilePath, string $baseDir = null) {
-		if(!is_file($jsonFilePath)) {
-			throw new MissingBuildFileException($jsonFilePath);
-		}
 		if(is_null($baseDir)) {
 			$baseDir = dirname($jsonFilePath);
 		}
 
+		$specification = new Manifest($jsonFilePath);
 		$json = file_get_contents($jsonFilePath);
 		$obj = json_decode($json);
 		if(is_null($obj)) {
