@@ -1,11 +1,15 @@
 <?php
-namespace Gt\Build\Detail;
+namespace Gt\Build\Configuration;
 
 use Gt\Build\JsonParseException;
 use Gt\Build\MissingBuildFileException;
 
+/**
+ * Represents the entire JSON configuration file, build.json
+ * Each path pattern in the JSON is represented with a PathPattern object.
+ */
 class Manifest {
-	/** @var PathMatch[] */
+	/** @var PathPattern[] */
 	protected $pathMatchList;
 
 	public function __construct(string $jsonFilePath) {
@@ -20,7 +24,7 @@ class Manifest {
 
 		$this->pathMatchList = [];
 		foreach($json as $pathMatch => $details) {
-			$this->pathMatchList []= new PathMatch(
+			$this->pathMatchList []= new PathPattern(
 				$pathMatch,
 				$details
 			);

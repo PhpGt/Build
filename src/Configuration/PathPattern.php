@@ -1,7 +1,11 @@
 <?php
-namespace Gt\Build\Detail;
+namespace Gt\Build\Configuration;
 
-class PathMatch {
+/**
+ * Represents a single path pattern block in the build.json and specified
+ * the properties that are allowed/expected.
+ */
+class PathPattern {
 	/** @var RequireBlock */
 	public $require;
 	/** @var ExecuteBlock */

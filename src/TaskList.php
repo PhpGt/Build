@@ -1,7 +1,7 @@
 <?php
 namespace Gt\Build;
 
-use Gt\Build\Detail\Manifest;
+use Gt\Build\Configuration\Manifest;
 use Iterator;
 
 class TaskList implements Iterator {

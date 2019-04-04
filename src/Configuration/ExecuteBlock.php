@@ -1,5 +1,5 @@
 <?php
-namespace Gt\Build\Detail;
+namespace Gt\Build\Configuration;
 
 class ExecuteBlock {
 	/** @var string The command to execute */
