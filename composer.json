@@ -1,6 +1,6 @@
 {
 	"name": "phpgt/build",
-	"description": "Build system for PHP 7 projects.",
+	"description": "Client-side build system for PHP projects.",
 	"license": "MIT",
 
 	"require": {
