@@ -1,12 +1,14 @@
 {
 	"name": "phpgt/build",
-	"description": "Build system for PHP 7 projects.",
+	"description": "Client-side build system for PHP projects.",
 	"license": "MIT",
 
 	"require": {
-		"php": "^7.2",
-		"webmozart/glob": "^4.1",
-		"composer/semver": "^1.4"
+		"php": ">=7.2",
+		"ext-json": "*",
+		"phpgt/cli": "1.*",
+		"webmozart/glob": "4.*",
+		"composer/semver": "1.*"
 	},
 
 	"require-dev": {

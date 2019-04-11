@@ -1,6 +1,10 @@
 #!/usr/bin/env php
 <?php
-// Usage: build [--watch|-w] PATH_TO_BUILD_JSON [PATH_TO_DEFAULT_BUILD_JSON]
+use Gt\Build\Command\RunCommand;
+use Gt\Cli\Application;
+use Gt\Cli\Argument\ArgumentList;
+use Gt\Cli\Argument\CommandArgumentList;
+
 $autoloadLocations = [
 	implode(DIRECTORY_SEPARATOR, [
 		__DIR__,
@@ -24,29 +28,9 @@ foreach($autoloadLocations as $location) {
 	}
 }
 
-$watch = false;
-$path = null;
-$defaultPath = null;
-
-foreach($argv as $i => $arg) {
-	if($i === 0) {
-		continue;
-	}
-
-	if($arg === "--watch"
-	|| $arg === "-w") {
-		$watch = true;
-	}
-	else if(is_null($path)) {
-		$path = $arg;
-	}
-	else if(is_null($defaultPath)) {
-		$defaultPath = $arg;
-	}
-}
-
-if(!is_null($defaultPath)) {
-	Gt\Build\BuildRunner::setDefault($defaultPath);
-}
-
-Gt\Build\BuildRunner::run($path, $watch);
+$application = new Application(
+	"Client-side build system",
+	new CommandArgumentList("run", ...$argv),
+	new RunCommand()
+);
+$application->run();

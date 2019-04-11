@@ -28,7 +28,7 @@ build.json:
 
 ```json
 {
-	"src/script/**/*.js": {
+	"src/script/**/*.es6": {
 		"name": "Babel transpile",
 		"command": "./node_modules/.bin/babel",
 		"args": "src/script/main.js -o www/script.js",

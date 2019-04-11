@@ -18,9 +18,13 @@ class Task {
 
 	protected $fileHashList = [];
 
-// TODO: PHP 7.2 object typehint
+	/**
+	 * @param object $details Details from the JSON data for this task
+	 * @param string $pathMatch Glob pattern for files to check for changes
+	 * @param string $basePath Path within project directory to check
+	 */
 	public function __construct(
-		$details,
+		object $details,
 		string $pathMatch = self::MATCH_EVERYTHING,
 		string $basePath = ""
 	) {
@@ -38,15 +42,20 @@ class Task {
 		return $this->name ?? $this->execute->command;
 	}
 
-	public function check():void {
+	public function check(array &$errors = null):void {
 		foreach($this->requirements as $requirement) {
-			if(!$requirement->check()) {
-				throw new UnsatisfiedRequirementVersion($requirement);
+			if(!$requirement->check($errors)) {
+				if(is_null($errors)) {
+					throw new UnsatisfiedRequirementVersion($requirement);
+				}
+				else {
+					$errors []= "Unsatisfied version: " . $requirement;
+				}
 			}
 		}
 	}
 
-	public function build():bool {
+	public function build(array &$errors = null):bool {
 		$changes = false;
 
 		foreach(Glob::glob($this->absolutePath) as $matchedPath) {
@@ -54,8 +63,7 @@ class Task {
 			$existingHash = $this->fileHashList[$matchedPath] ?? null;
 
 			if($hash !== $existingHash) {
-				$this->execute();
-				$changes = true;
+				$changes = $this->execute($errors);
 			}
 
 			$this->fileHashList[$matchedPath] = $hash;
@@ -86,7 +94,7 @@ class Task {
 		}
 	}
 
-	protected function execute():void {
+	protected function execute(array &$errors = null):bool {
 		$previousCwd = getcwd();
 		chdir($this->basePath);
 
@@ -95,12 +103,38 @@ class Task {
 			$this->execute->arguments,
 		]);
 
-		exec($fullCommand, $output, $return);
+		$descriptor = [
+			0 => ["pipe", "r"],
+			1 => ["pipe", "w"],
+			2 => ["pipe", "w"],
+		];
+		$proc = proc_open($fullCommand, $descriptor, $pipes);
+
+		do {
+			$status = proc_get_status($proc);
+		} while($status["running"]);
 		chdir($previousCwd);
+		$output = "";
+
+		$return = $status["exitcode"];
+		$output .= stream_get_contents($pipes[1]);
+		$output .= stream_get_contents($pipes[2]);
+		proc_close($proc);
 
 		if($return !== 0) {
-			throw new TaskExecutionFailureException($fullCommand);
+			if(is_null($errors)) {
+				throw new TaskExecutionFailureException($fullCommand);
+			}
+			else {
+				$errors []= $this->execute->command
+					. PHP_EOL
+					. $output;
+			}
+
+			return false;
 		}
+
+		return true;
 	}
 
 	protected function expandRelativePath(string $basePath):string {
