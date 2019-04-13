@@ -1,20 +1,37 @@
 <?php
 namespace Gt\Build;
 
+use Webmozart\Glob\Glob;
+
 class Build {
 	/** @var TaskList */
 	protected $taskList;
 	protected $baseDir;
 
-	public function __construct(string $buildPath, string $workingDirectory) {
-		$this->taskList = new TaskList($buildPath, $workingDirectory);
+	public function __construct(
+		string $jsonFilePath,
+		string $workingDirectory
+	) {
+		$this->taskList = new TaskList(
+			$jsonFilePath,
+			$workingDirectory
+		);
 	}
 
-	public function check():int {
+	/** For each task, ensure all requirements are met. */
+	public function check(array &$errors = null):int {
 		$count = 0;
 
 		foreach($this->taskList as $pathMatch => $task) {
-			$task->check();
+			$absolutePathMatch = implode(DIRECTORY_SEPARATOR, [
+				getcwd(),
+				$pathMatch,
+			]);
+			$fileList = Glob::glob($absolutePathMatch);
+			if(!empty($fileList)) {
+				$task->check($errors);
+			}
+
 			$count ++;
 		}
 
@@ -22,12 +39,14 @@ class Build {
 	}
 
 	/**
-	 * @return Task[]
+	 * Executes the commands associated with each build task.
+	 * @return Task[] List of tasks built (some may not need building due to
+	 * having no changes).
 	 */
-	public function build():array {
+	public function build(array &$errors = null):array {
 		$updatedTasks = [];
 		foreach($this->taskList as $pathMatch => $task) {
-			if($task->build()) {
+			if($task->build($errors)) {
 				$updatedTasks []= $task;
 			}
 		}

@@ -1,6 +1,9 @@
 <?php
 namespace Gt\Build;
 
+use Gt\Build\Configuration\ExecuteBlock;
+use Gt\Build\Configuration\RequireBlockItem;
+use Gt\Build\Configuration\TaskBlock;
 use Webmozart\Glob\Glob;
 use Webmozart\PathUtil\Path;
 
@@ -9,44 +12,54 @@ class Task {
 
 	protected $absolutePath;
 	protected $basePath;
-	protected $pathMatch;
+	protected $glob;
 
 	protected $name;
 	/** @var Requirement[] */
-	protected $requirements = [];
+	protected $requirementList = [];
+	/** @var ExecuteBlock */
 	protected $execute;
 
 	protected $fileHashList = [];
 
-// TODO: PHP 7.2 object typehint
+	/**
+	 * @param object $taskBlock Details from the JSON data for this task
+	 * @param string $glob Path match for files to check for changes
+	 * @param string $basePath Path within project directory to check
+	 */
 	public function __construct(
-		$details,
-		string $pathMatch = self::MATCH_EVERYTHING,
+		TaskBlock $taskBlock,
+		string $glob = self::MATCH_EVERYTHING,
 		string $basePath = ""
 	) {
 		$this->basePath = $this->expandRelativePath($basePath);
-		$this->pathMatch = $pathMatch;
+		$this->glob = $glob;
 		$this->absolutePath = implode(DIRECTORY_SEPARATOR, [
 			$this->basePath,
-			$this->pathMatch,
+			$this->glob,
 		]);
 		$this->absolutePath = Path::canonicalize($this->absolutePath);
-		$this->setDetails($details);
+		$this->setDetails($taskBlock);
 	}
 
 	public function __toString():string {
 		return $this->name ?? $this->execute->command;
 	}
 
-	public function check():void {
-		foreach($this->requirements as $requirement) {
-			if(!$requirement->check()) {
-				throw new UnsatisfiedRequirementVersion($requirement);
+	public function check(array &$errors = null):void {
+		foreach($this->requirementList as $requirement) {
+			if(!$requirement->check($errors)) {
+				if(is_null($errors)) {
+					throw new UnsatisfiedRequirementVersion($requirement);
+				}
+				else {
+					$errors []= "Unsatisfied version: " . $requirement;
+				}
 			}
 		}
 	}
 
-	public function build():bool {
+	public function build(array &$errors = null):bool {
 		$changes = false;
 
 		foreach(Glob::glob($this->absolutePath) as $matchedPath) {
@@ -54,8 +67,7 @@ class Task {
 			$existingHash = $this->fileHashList[$matchedPath] ?? null;
 
 			if($hash !== $existingHash) {
-				$this->execute();
-				$changes = true;
+				$changes = $this->execute($errors);
 			}
 
 			$this->fileHashList[$matchedPath] = $hash;
@@ -64,29 +76,25 @@ class Task {
 		return $changes;
 	}
 
-	public function createNewRequirement(string $key, string $value):Requirement {
+	public function requirementFromRequireBlockItem(
+		RequireBlockItem $item
+	):Requirement {
 		return new Requirement(
-			$key,
-			$value
+			$item->command,
+			$item->version
 		);
 	}
 
-// TODO: PHP 7.2 object typehint
-	protected function setDetails($details):void {
+	protected function setDetails(TaskBlock $details):void {
 		$this->execute = $details->execute;
-		$this->name = $details->name ?? $details->execute->command;
+		$this->name = $details->name;
 
-		if(isset($details->require)) {
-			foreach($details->require as $key => $value) {
-				$this->requirements []= $this->createNewRequirement(
-					$key,
-					$value
-				);
-			}
+		if($details->require) {
+			$this->requirementList = $details->require->getRequirementList();
 		}
 	}
 
-	protected function execute():void {
+	protected function execute(array &$errors = null):bool {
 		$previousCwd = getcwd();
 		chdir($this->basePath);
 
@@ -95,12 +103,38 @@ class Task {
 			$this->execute->arguments,
 		]);
 
-		exec($fullCommand, $output, $return);
+		$descriptor = [
+			0 => ["pipe", "r"],
+			1 => ["pipe", "w"],
+			2 => ["pipe", "w"],
+		];
+		$proc = proc_open($fullCommand, $descriptor, $pipes);
+
+		do {
+			$status = proc_get_status($proc);
+		} while($status["running"]);
 		chdir($previousCwd);
+		$output = "";
+
+		$return = $status["exitcode"];
+		$output .= stream_get_contents($pipes[1]);
+		$output .= stream_get_contents($pipes[2]);
+		proc_close($proc);
 
 		if($return !== 0) {
-			throw new TaskExecutionFailureException($fullCommand);
+			if(is_null($errors)) {
+				throw new TaskExecutionFailureException($fullCommand);
+			}
+			else {
+				$errors []= $this->execute->command
+					. PHP_EOL
+					. $output;
+			}
+
+			return false;
 		}
+
+		return true;
 	}
 
 	protected function expandRelativePath(string $basePath):string {

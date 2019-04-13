@@ -1,41 +1,103 @@
 <?php
 namespace Gt\Build;
 
-class BuildRunner {
-	protected static $defaultPath;
+use Gt\Cli\Stream;
 
-	public static function run(string $path, bool $continue = true):void {
-		$workingDirectory = $path;
+/** Responsible for running all build tasks and optionally watching for changes */
+class BuildRunner {
+	protected $defaultPath;
+	protected $workingDirectory;
+	protected $stream;
+
+	public function __construct($path = null, Stream $stream = null) {
+		if(is_null($path)) {
+			$path = getcwd();
+		}
+		if(is_null($stream)) {
+			$stream = new Stream(
+				"php://stdin",
+				"php://stdout",
+				"php://stderr"
+			);
+		}
+		$this->workingDirectory = $path;
+		$this->stream = $stream;
+	}
+
+	public function setDefault(string $path):void {
+		$this->defaultPath = $path;
+	}
+
+	public function run(bool $continue = true):void {
+// Find path to JSON configuration file, and normalise the working directory.
+		$workingDirectory = $this->workingDirectory;
 		if(is_file($workingDirectory)) {
 			$workingDirectory = dirname($workingDirectory);
 		}
 
-		$path = rtrim($path, "/\\");
-		if(is_dir($path)) {
-			$path .= DIRECTORY_SEPARATOR;
-			$path .= "build.json";
+		$workingDirectory = rtrim($workingDirectory, "/\\");
+		$jsonPath = $workingDirectory;
+		if(is_dir($jsonPath)) {
+			$jsonPath .= DIRECTORY_SEPARATOR;
+			$jsonPath .= "build.json";
 		}
 
-		if(!is_file($path)) {
-			$path = self::$defaultPath;
+		if(!is_file($jsonPath)) {
+			$jsonPath= $this->defaultPath;
 		}
 
-		$build = new Build($path, $workingDirectory);
-		$build->check();
+		$startTime = microtime(true);
 
+// Check that the developer has all the necessary requirements.
+// $errors will be passed by reference to Build::check. Passing an array by
+// reference will suppress exceptions, instead filling the array with error
+// strings for output back to the terminal.
+		$errors = [];
+		$build = new Build($jsonPath, $workingDirectory);
+		$build->check($errors);
+
+// Without the correct requirements, the build runner can't proceed.
+		if(!empty($errors)) {
+			$this->stream->writeLine("The following errors occurred:", Stream::ERROR);
+
+			foreach($errors as $e) {
+				$this->stream->writeLine(" • " . $e);
+			}
+			exit(1);
+		}
+
+// Infinite loop while $continue is true. This allows for builds to take place
+// as soon as changes happen on the relevant files. It also allows the $continue
+// variable to be changed mid-run by an outside force such as a unit test.
 		do {
-			$updates = $build->build();
+			$updates = $build->build($errors);
 
 			foreach($updates as $update) {
-				echo date("Y-m-d H:i:s");
-				echo "\t";
-				echo "Updated: $update" . PHP_EOL;
+				$this->stream->writeLine(
+					date("Y-m-d H:i:s")
+					. "\t"
+					. "Success: $update"
+				);
 			}
-			usleep(100000);
-		} while($continue);
-	}
 
-	public static function setDefault(string $path):void {
-		self::$defaultPath = $path;
+			foreach($errors as $error) {
+				$this->stream->writeLine(
+					date("Y-m-d H:i:s")
+					. "\t"
+					. "Error: $error",
+					Stream::ERROR
+				);
+			}
+
+			// Quarter-second wait:
+			usleep(250000);
+		}
+		while($continue);
+
+		$deltaTime = round(
+			microtime(true) - $startTime,
+			1
+		);
+		$this->stream->writeLine("Build script completed in $deltaTime seconds");
 	}
 }
