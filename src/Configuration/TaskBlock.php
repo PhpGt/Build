@@ -5,17 +5,28 @@ namespace Gt\Build\Configuration;
  * Represents a single path pattern block in the build.json and specified
  * the properties that are allowed/expected.
  */
-class PathPattern {
-	/** @var RequireBlock */
+class TaskBlock {
+	/** @var string|null Name property if set; defaults to execution command */
+	public $name;
+	/** @var string */
+	public $glob;
+	/** @var RequireBlock|null */
 	public $require;
 	/** @var ExecuteBlock */
 	public $execute;
-	/** @var string */
-	public $pathMatch;
 
-	public function __construct(string $pathMatch, object $details) {
-		$this->pathMatch = $pathMatch;
-		$this->require = new RequireBlock($details->require);
+	public function __construct(string $glob, object $details) {
+		$this->glob = $glob;
+
+		if(isset($details->require)) {
+			$this->require = new RequireBlock($details->require);
+
+		}
+		else {
+			$this->require = null;
+		}
+
 		$this->execute = new ExecuteBlock($details->execute);
+		$this->name = $details->name ?? $this->execute->command;
 	}
 }

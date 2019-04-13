@@ -5,11 +5,12 @@ use Gt\Build\Configuration\Manifest;
 use Iterator;
 
 class TaskList implements Iterator {
-	protected $pathMatches = [];
-	/** @var array Task[] */
-	protected $tasks = [];
-
+	/** @var Task[] */
+	protected $taskList = [];
+	/** @var string|null Null if the index is out of bounds */
 	protected $iteratorKey;
+	/** @var int Numerical index to use in iteration */
+	protected $iteratorIndex;
 
 	public function __construct(string $jsonFilePath, string $baseDir = null) {
 		if(is_null($baseDir)) {
@@ -17,39 +18,40 @@ class TaskList implements Iterator {
 		}
 
 		$specification = new Manifest($jsonFilePath);
-		$json = file_get_contents($jsonFilePath);
-		$obj = json_decode($json);
-		if(is_null($obj)) {
-			throw new JsonParseException(json_last_error());
-		}
-
-		foreach($obj as $pathMatch => $details) {
-			$this->pathMatches []= $pathMatch;
-			$this->tasks[$pathMatch] = new Task(
-				$details,
-				$pathMatch,
-				$baseDir
-			);
+		foreach($specification as $glob => $taskBlock) {
+			$this->taskList[$glob] = new Task($taskBlock);
 		}
 	}
 
-	public function current():Task {
-		return $this->tasks[$this->pathMatches[$this->iteratorKey]];
-	}
-
-	public function next():void {
-		$this->iteratorKey ++;
-	}
-
-	public function key():string {
-		return $this->pathMatches[$this->iteratorKey];
-	}
-
-	public function valid():bool {
-		return isset($this->pathMatches[$this->iteratorKey]);
-	}
-
+	/** @link https://php.net/manual/en/iterator.rewind.php */
 	public function rewind():void {
-		$this->iteratorKey = 0;
+		$this->iteratorIndex = 0;
+		$this->setIteratorKey();
+	}
+
+	/** @link https://php.net/manual/en/iterator.next.php */
+	public function next():void {
+		$this->iteratorIndex ++;
+		$this->setIteratorKey();
+	}
+
+	/** @link https://php.net/manual/en/iterator.valid.php */
+	public function valid():bool {
+		return !is_null($this->iteratorKey);
+	}
+
+	/** @link https://php.net/manual/en/iterator.key.php */
+	public function key():string {
+		return $this->iteratorKey;
+	}
+
+	/** @link https://php.net/manual/en/iterator.current.php */
+	public function current():Task {
+		return $this->taskList[$this->iteratorKey];
+	}
+
+	protected function setIteratorKey():void {
+		$keys = array_keys($this->taskList);
+		$this->iteratorKey = $keys[$this->iteratorIndex] ?? null;
 	}
 }

@@ -1,6 +1,9 @@
 <?php
 namespace Gt\Build;
 
+use Gt\Build\Configuration\ExecuteBlock;
+use Gt\Build\Configuration\RequireBlockItem;
+use Gt\Build\Configuration\TaskBlock;
 use Webmozart\Glob\Glob;
 use Webmozart\PathUtil\Path;
 
@@ -9,33 +12,34 @@ class Task {
 
 	protected $absolutePath;
 	protected $basePath;
-	protected $pathMatch;
+	protected $glob;
 
 	protected $name;
 	/** @var Requirement[] */
-	protected $requirements = [];
+	protected $requirementList = [];
+	/** @var ExecuteBlock */
 	protected $execute;
 
 	protected $fileHashList = [];
 
 	/**
-	 * @param object $details Details from the JSON data for this task
-	 * @param string $pathMatch Glob pattern for files to check for changes
+	 * @param object $taskBlock Details from the JSON data for this task
+	 * @param string $glob Path match for files to check for changes
 	 * @param string $basePath Path within project directory to check
 	 */
 	public function __construct(
-		object $details,
-		string $pathMatch = self::MATCH_EVERYTHING,
+		TaskBlock $taskBlock,
+		string $glob = self::MATCH_EVERYTHING,
 		string $basePath = ""
 	) {
 		$this->basePath = $this->expandRelativePath($basePath);
-		$this->pathMatch = $pathMatch;
+		$this->glob = $glob;
 		$this->absolutePath = implode(DIRECTORY_SEPARATOR, [
 			$this->basePath,
-			$this->pathMatch,
+			$this->glob,
 		]);
 		$this->absolutePath = Path::canonicalize($this->absolutePath);
-		$this->setDetails($details);
+		$this->setDetails($taskBlock);
 	}
 
 	public function __toString():string {
@@ -43,7 +47,7 @@ class Task {
 	}
 
 	public function check(array &$errors = null):void {
-		foreach($this->requirements as $requirement) {
+		foreach($this->requirementList as $requirement) {
 			if(!$requirement->check($errors)) {
 				if(is_null($errors)) {
 					throw new UnsatisfiedRequirementVersion($requirement);
@@ -72,25 +76,21 @@ class Task {
 		return $changes;
 	}
 
-	public function createNewRequirement(string $key, string $value):Requirement {
+	public function requirementFromRequireBlockItem(
+		RequireBlockItem $item
+	):Requirement {
 		return new Requirement(
-			$key,
-			$value
+			$item->command,
+			$item->version
 		);
 	}
 
-// TODO: PHP 7.2 object typehint
-	protected function setDetails($details):void {
+	protected function setDetails(TaskBlock $details):void {
 		$this->execute = $details->execute;
-		$this->name = $details->name ?? $details->execute->command;
+		$this->name = $details->name;
 
-		if(isset($details->require)) {
-			foreach($details->require as $key => $value) {
-				$this->requirements []= $this->createNewRequirement(
-					$key,
-					$value
-				);
-			}
+		if($details->require) {
+			$this->requirementList = $details->require->getRequirementList();
 		}
 	}
 
