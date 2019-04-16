@@ -16,6 +16,11 @@ class RunCommand extends Command {
 			"php://stderr"
 		);
 		$buildRunner = new BuildRunner(getcwd(), $stream);
+
+		if($arguments->contains("default")) {
+			$buildRunner->setDefault($arguments->get("default"));
+		}
+
 		$buildRunner->run($arguments->contains("watch"));
 	}
 
@@ -48,7 +53,20 @@ class RunCommand extends Command {
 			new Parameter(
 				false,
 				"watch",
-				"w"
+				"w",
+				"Pass this flag to continue the build runner after first build. Any changes to the filesystem will be rebuilt automatically."
+			),
+			new Parameter(
+				true,
+				"config",
+				"c",
+				"Path to the build.json. This defaults to the project root directory."
+			),
+			new Parameter(
+				true,
+				"default",
+				"d",
+				"Path to a default build.json to use if there is no build.json in the project root."
 			),
 		];
 	}
