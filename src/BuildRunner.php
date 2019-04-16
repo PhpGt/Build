@@ -5,8 +5,11 @@ use Gt\Cli\Stream;
 
 /** Responsible for running all build tasks and optionally watching for changes */
 class BuildRunner {
+	/** @var string */
 	protected $defaultPath;
+	/** @var string */
 	protected $workingDirectory;
+	/** @var Stream */
 	protected $stream;
 
 	public function __construct($path = null, Stream $stream = null) {
@@ -20,12 +23,12 @@ class BuildRunner {
 				"php://stderr"
 			);
 		}
+		$this->defaultPath = implode(DIRECTORY_SEPARATOR, [
+			getcwd(),
+			"build.json",
+		]);
 		$this->workingDirectory = $path;
 		$this->stream = $stream;
-	}
-
-	public function setDefault(string $path):void {
-		$this->defaultPath = $path;
 	}
 
 	public function run(bool $continue = true):void {
@@ -43,7 +46,19 @@ class BuildRunner {
 		}
 
 		if(!is_file($jsonPath)) {
-			$jsonPath= $this->defaultPath;
+			$jsonPath = $this->defaultPath;
+		}
+		if(!is_file($jsonPath)) {
+			$whichPath =
+				$jsonPath === $this->defaultPath
+				? "default"
+				: "user";
+
+			$this->stream->writeLine(
+				"No build config found. Trying $whichPath path: $jsonPath",
+				Stream::ERROR
+			);
+			exit(1);
 		}
 
 		$startTime = microtime(true);
@@ -99,5 +114,9 @@ class BuildRunner {
 			1
 		);
 		$this->stream->writeLine("Build script completed in $deltaTime seconds");
+	}
+
+	public function setDefault(string $path):void {
+		$this->defaultPath = $path;
 	}
 }
