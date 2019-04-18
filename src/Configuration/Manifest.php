@@ -24,7 +24,7 @@ class Manifest implements Iterator {
 
 		$json = json_decode(file_get_contents($jsonFilePath));
 		if(is_null($json)) {
-			throw new JsonParseException(json_last_error());
+			throw new JsonParseException(json_last_error_msg());
 		}
 
 		$this->taskBlockList = [];

@@ -68,7 +68,17 @@ class BuildRunner {
 // reference will suppress exceptions, instead filling the array with error
 // strings for output back to the terminal.
 		$errors = [];
-		$build = new Build($jsonPath, $workingDirectory);
+		try {
+			$build = new Build(
+				$jsonPath,
+				$workingDirectory
+			);
+		}
+		catch(JsonParseException $exception) {
+			$this->stream->writeLine("Syntax error in $jsonPath", Stream::ERROR);
+			exit(1);
+		}
+
 		$build->check($errors);
 
 // Without the correct requirements, the build runner can't proceed.
@@ -80,13 +90,12 @@ class BuildRunner {
 			}
 			exit(1);
 		}
-
 // Infinite loop while $continue is true. This allows for builds to take place
 // as soon as changes happen on the relevant files. It also allows the $continue
 // variable to be changed mid-run by an outside force such as a unit test.
+		$watchMessage = $continue ? "Watching for changes..." : null;
 		do {
 			$updates = $build->build($errors);
-
 			foreach($updates as $update) {
 				$this->stream->writeLine(
 					date("Y-m-d H:i:s")
@@ -106,6 +115,11 @@ class BuildRunner {
 
 			// Quarter-second wait:
 			usleep(250000);
+
+			if($watchMessage) {
+				$this->stream->writeLine($watchMessage);
+				$watchMessage = null;
+			}
 		}
 		while($continue);
 

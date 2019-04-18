@@ -7,13 +7,13 @@ namespace Gt\Build\Configuration;
  */
 class TaskBlock {
 	/** @var string|null Name property if set; defaults to execution command */
-	public $name;
+	protected $name;
 	/** @var string */
-	public $glob;
+	protected $glob;
 	/** @var RequireBlock|null */
-	public $require;
+	protected $require;
 	/** @var ExecuteBlock */
-	public $execute;
+	protected $execute;
 
 	public function __construct(string $glob, object $details) {
 		$this->glob = $glob;
@@ -28,5 +28,21 @@ class TaskBlock {
 
 		$this->execute = new ExecuteBlock($details->execute);
 		$this->name = $details->name ?? $this->execute->command;
+	}
+
+	public function getName():string {
+		return $this->name;
+	}
+
+	public function getGlob():string {
+		return $this->glob;
+	}
+
+	public function getRequireBlock():?RequireBlock {
+		return $this->require;
+	}
+
+	public function getExecuteBlock():?ExecuteBlock {
+		return $this->execute;
 	}
 }

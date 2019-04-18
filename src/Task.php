@@ -4,6 +4,7 @@ namespace Gt\Build;
 use Gt\Build\Configuration\ExecuteBlock;
 use Gt\Build\Configuration\RequireBlockItem;
 use Gt\Build\Configuration\TaskBlock;
+use Gt\Daemon\Process;
 use Webmozart\Glob\Glob;
 use Webmozart\PathUtil\Path;
 
@@ -28,12 +29,10 @@ class Task {
 	 * @param string $basePath Path within project directory to check
 	 */
 	public function __construct(
-		TaskBlock $taskBlock,
-		string $glob = self::MATCH_EVERYTHING,
-		string $basePath = ""
+		TaskBlock $taskBlock
 	) {
-		$this->basePath = $this->expandRelativePath($basePath);
-		$this->glob = $glob;
+		$this->glob = $taskBlock->getGlob();
+		$this->basePath = getcwd();
 		$this->absolutePath = implode(DIRECTORY_SEPARATOR, [
 			$this->basePath,
 			$this->glob,
@@ -86,11 +85,11 @@ class Task {
 	}
 
 	protected function setDetails(TaskBlock $details):void {
-		$this->execute = $details->execute;
-		$this->name = $details->name;
+		$this->execute = $details->getExecuteBlock();
+		$this->name = $details->getName();
 
-		if($details->require) {
-			$this->requirementList = $details->require->getRequirementList();
+		if($details->getRequireBlock()) {
+			$this->requirementList = $details->getRequireBlock()->getRequirementList();
 		}
 	}
 
@@ -103,25 +102,26 @@ class Task {
 			$this->execute->arguments,
 		]);
 
-		$descriptor = [
-			0 => ["pipe", "r"],
-			1 => ["pipe", "w"],
-			2 => ["pipe", "w"],
-		];
-		$proc = proc_open($fullCommand, $descriptor, $pipes);
+		$process = new Process($fullCommand);
+		$process->exec();
 
 		do {
-			$status = proc_get_status($proc);
-		} while($status["running"]);
+			$output = $process->getOutput();
+			$errorOutput = $process->getErrorOutput();
+
+			if(!empty($output)) {
+				fwrite(STDOUT, $output);
+			}
+			if(!empty($errorOutput)) {
+				fwrite(STDERR, $errorOutput);
+			}
+
+		}
+		while($process->isRunning());
+
 		chdir($previousCwd);
-		$output = "";
 
-		$return = $status["exitcode"];
-		$output .= stream_get_contents($pipes[1]);
-		$output .= stream_get_contents($pipes[2]);
-		proc_close($proc);
-
-		if($return !== 0) {
+		if($process->getExitCode() !== 0) {
 			if(is_null($errors)) {
 				throw new TaskExecutionFailureException($fullCommand);
 			}
