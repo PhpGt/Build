@@ -10,17 +10,12 @@ use Gt\Cli\Stream;
 
 class RunCommand extends Command {
 	public function run(ArgumentValueList $arguments = null):void {
-		$stream = new Stream(
-			"php://stdin",
-			"php://stdout",
-			"php://stderr"
-		);
+		$stream = $this->output;
 		$buildRunner = new BuildRunner(getcwd(), $stream);
 
 		if($arguments->contains("default")) {
 			$buildRunner->setDefault($arguments->get("default"));
 		}
-
 		$buildRunner->run($arguments->contains("watch"));
 	}
 
