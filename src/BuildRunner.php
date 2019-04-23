@@ -127,7 +127,7 @@ class BuildRunner {
 			microtime(true) - $startTime,
 			1
 		);
-		$this->stream->writeLine("Build script completed in $deltaTime seconds");
+		$this->stream->writeLine("Build script completed in $deltaTime seconds.");
 	}
 
 	public function setDefault(string $path):void {
