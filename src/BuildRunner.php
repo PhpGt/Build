@@ -95,6 +95,7 @@ class BuildRunner {
 // variable to be changed mid-run by an outside force such as a unit test.
 		$watchMessage = $continue ? "Watching for changes..." : null;
 		do {
+			$errors = [];
 			$updates = $build->build($errors);
 			foreach($updates as $update) {
 				$this->stream->writeLine(
