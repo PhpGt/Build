@@ -1,12 +1,4 @@
 {
-        "repositories": [
-                {
-                        "type": "path",
-                        "url": "/home/g105b/Code/PhpGt/*"
-                }
-        ],
-	"minimum-stability": "dev",
-
 	"name": "phpgt/build",
 	"description": "Client-side build system for PHP projects.",
 	"license": "MIT",
@@ -14,7 +6,7 @@
 	"require": {
 		"php": ">=7.2",
 		"ext-json": "*",
-		"phpgt/cli": "dev-master",
+		"phpgt/cli": "*",
 		"webmozart/glob": "4.*",
 		"composer/semver": "1.*"
 	},
