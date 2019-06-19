@@ -24,31 +24,36 @@ This project provides a system for defining and running client-side build proces
 Example usage
 -------------
 
-build.json:
+An example `build.json` below shows three different usages:
+
+1) `npm` has been used to install babel into the node_modules directory. The command to run is the `babel` binary within the node_modules directory. The command will execute whenever a `*.es6` file changes within the script directory.
+2) `sass` has been installed to the system. The `sass` command is available on the environment PATH, and the developer has stated that at least version 3.5 is required for the build. The command will execute whenever a `*.scss` file changes within the style directory.
+3) A custom PHP script is called whenever any HTML or PHP file is edited in the page directory. This assumes that the command `vendor/bin/sitemap` is installed via a composer package.
+
+`build.json`:
 
 ```json
 {
-	"src/script/**/*.es6": {
+	"script/**/*.es6": {
 		"name": "Babel transpile",
 		"command": "./node_modules/.bin/babel",
-		"args": "src/script/main.js -o www/script.js",
+		"args": "script/main.js -o www/script.js",
 		"require": {
 			"node": "^8.4",
 			"@command": "^6.0"
 		}
 	},
 	
-	"src/style/**/*.scss": {
+	"style/**/*.scss": {
 		"name": "Sass compilation",
 		"command": "sass",
-		"args": "src/style/main.scss www/style.css",
+		"args": "style/main.scss www/style.css",
 		"require": {
-			"ruby": "2.4.2",
-			"@command": "3.5.1"
+			"@command": ">=3.5"
 		}
 	},
 	
-	"src/page/**/*.{html|php}": {
+	"page/**/*.{html|php}": {
 		"name": "Sitemap generation",
 		"command": "php vendor/bin/sitemap",
 		"args": "src/page www/sitemap.xml"
