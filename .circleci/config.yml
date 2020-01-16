@@ -3,7 +3,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/php:7.2-cli
+      - image: circleci/php:7.4-cli
 
     working_directory: ~/repo
 
@@ -29,7 +29,7 @@ jobs:
 
   test:
     docker:
-      - image: circleci/php:7.2-cli
+      - image: circleci/php:7.4-cli
 
     working_directory: ~/repo
 
