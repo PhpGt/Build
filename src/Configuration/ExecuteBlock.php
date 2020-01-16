@@ -4,7 +4,7 @@ namespace Gt\Build\Configuration;
 class ExecuteBlock {
 	/** @var string The command to execute */
 	public $command;
-	/** @var string Arguments to pass to command */
+	/** @var string[] Arguments to pass to command */
 	public $arguments;
 
 	public function __construct(object $details) {

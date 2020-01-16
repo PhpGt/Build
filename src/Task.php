@@ -9,8 +9,6 @@ use Webmozart\Glob\Glob;
 use Webmozart\PathUtil\Path;
 
 class Task {
-	const MATCH_EVERYTHING = "**/*";
-
 	protected $absolutePath;
 	protected $basePath;
 	protected $glob;
@@ -97,12 +95,10 @@ class Task {
 		$previousCwd = getcwd();
 		chdir($this->basePath);
 
-		$fullCommand = implode(" ", [
+		$process = new Process(
 			$this->execute->command,
-			$this->execute->arguments,
-		]);
-
-		$process = new Process($fullCommand);
+			...$this->execute->arguments
+		);
 		$process->exec();
 
 		do {
@@ -123,7 +119,12 @@ class Task {
 
 		if($process->getExitCode() !== 0) {
 			if(is_null($errors)) {
-				throw new TaskExecutionFailureException($fullCommand);
+				throw new TaskExecutionFailureException(
+					implode(" ", array_merge(
+						[$this->execute->command],
+						...$this->execute->arguments
+					))
+				);
 			}
 			else {
 				$errors []= $this->execute->command
