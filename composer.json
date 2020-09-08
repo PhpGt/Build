@@ -8,7 +8,7 @@
 		"ext-json": "*",
 		"phpgt/cli": "*",
 		"webmozart/glob": "4.*",
-		"composer/semver": "1.*"
+		"composer/semver": "3.*"
 	},
 
 	"require-dev": {
