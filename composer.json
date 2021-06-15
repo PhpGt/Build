@@ -29,5 +29,12 @@
 
 	"bin": [
 		"bin/build"
+	],
+	
+	"funding": [
+		{
+			"type": "github",
+			"url": "https://github.com/sponsors/PhpGt"
+		}
 	]
 }
