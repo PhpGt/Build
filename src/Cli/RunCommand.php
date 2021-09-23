@@ -21,7 +21,7 @@ class RunCommand extends Command {
 	}
 
 	public function getDescription():string {
-		return "Start the local webserver, crontab and client side build watcher.";
+		return "Compile client-side assets";
 	}
 
 	/** @return  NamedParameter[] */
