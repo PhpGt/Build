@@ -12,8 +12,8 @@
 	},
 
 	"require-dev": {
-		"phpunit/phpunit": "9.*",
-		"phpstan/phpstan": ">=0.12.64"
+		"phpunit/phpunit": "^9.5",
+		"phpstan/phpstan": "^0.12"
 	},
 
 	"autoload": {
@@ -30,7 +30,7 @@
 	"bin": [
 		"bin/build"
 	],
-	
+
 	"funding": [
 		{
 			"type": "github",

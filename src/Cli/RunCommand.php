@@ -1,17 +1,15 @@
 <?php
-namespace Gt\Build\Command;
+namespace Gt\Build\Cli;
 
 use Gt\Build\BuildRunner;
 use Gt\Cli\Argument\ArgumentValueList;
 use Gt\Cli\Command\Command;
 use Gt\Cli\Parameter\NamedParameter;
 use Gt\Cli\Parameter\Parameter;
-use Gt\Cli\Stream;
 
 class RunCommand extends Command {
 	public function run(ArgumentValueList $arguments = null):void {
-		$stream = $this->output;
-		$buildRunner = new BuildRunner(getcwd(), $stream);
+		$buildRunner = new BuildRunner(getcwd(), $this->stream);
 		if($arguments->contains("default")) {
 			$buildRunner->setDefault($arguments->get("default"));
 		}
@@ -23,7 +21,7 @@ class RunCommand extends Command {
 	}
 
 	public function getDescription():string {
-		return "Start the local webserver, crontab and client side build watcher.";
+		return "Compile client-side assets";
 	}
 
 	/** @return  NamedParameter[] */
