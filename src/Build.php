@@ -45,7 +45,7 @@ class Build {
 	 */
 	public function build(array &$errors = null):array {
 		$updatedTasks = [];
-		foreach($this->taskList as $pathMatch => $task) {
+		foreach($this->taskList as $task) {
 			if($task->build($errors)) {
 				$updatedTasks []= $task;
 			}
