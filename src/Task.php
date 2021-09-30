@@ -57,20 +57,23 @@ class Task {
 	}
 
 	public function build(array &$errors = null):bool {
-		$changes = false;
+		$hashMiss = false;
 
 		foreach(Glob::glob($this->absolutePath) as $matchedPath) {
 			$hash = filemtime($matchedPath);
 			$existingHash = $this->fileHashList[$matchedPath] ?? null;
 
 			if($hash !== $existingHash) {
-				$changes = $this->execute($errors);
+				$hashMiss = true;
 			}
 
 			$this->fileHashList[$matchedPath] = $hash;
 		}
 
-		return $changes;
+		if($hashMiss) {
+			return $this->execute($errors);
+		}
+		return false;
 	}
 
 	public function requirementFromRequireBlockItem(
