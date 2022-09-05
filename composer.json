@@ -7,7 +7,7 @@
 		"php": ">=7.4",
 		"ext-json": "*",
 		"phpgt/cli": "^v1.3.0",
-		"webmozart/glob": "v4.4.*",
+		"webmozart/glob": "v4.6.*",
 		"composer/semver": "v3.*"
 	},
 
