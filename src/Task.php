@@ -157,10 +157,7 @@ class Task {
 			return false;
 		}
 
-		return
-			// Unix:
-			$path[0] === DIRECTORY_SEPARATOR
-			// Windows:
-			|| preg_match('~\A[A-Z]:(?![^/\\\\])~i',$path) > 0;
+		// Either unix path starts from "/" or Windows path starts with "X:\"
+		return $path[0] === DIRECTORY_SEPARATOR	|| preg_match('~\A[A-Z]:(?![^/\\\\])~i', $path) > 0;
 	}
 }

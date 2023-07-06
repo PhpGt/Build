@@ -2,10 +2,9 @@
 namespace Gt\Build\Configuration;
 
 class ExecuteBlock {
-	/** @var string The command to execute */
-	public $command;
-	/** @var string[] Arguments to pass to command */
-	public $arguments;
+	public string $command;
+	/** @var array<string> */
+	public array $arguments;
 
 	public function __construct(object $details) {
 		if(empty($details->command)) {

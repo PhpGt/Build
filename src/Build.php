@@ -32,7 +32,7 @@ class Build {
 				$task->check($errors);
 			}
 
-			$count ++;
+			$count++;
 		}
 
 		return $count;

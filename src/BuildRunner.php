@@ -39,27 +39,7 @@ class BuildRunner {
 		}
 
 		$workingDirectory = rtrim($workingDirectory, "/\\");
-		$jsonPath = $workingDirectory;
-		if(is_dir($jsonPath)) {
-			$jsonPath .= DIRECTORY_SEPARATOR;
-			$jsonPath .= "build.json";
-		}
-
-		if(!is_file($jsonPath)) {
-			$jsonPath = $this->defaultPath;
-		}
-		if(!is_file($jsonPath)) {
-			$whichPath =
-				$jsonPath === $this->defaultPath
-				? "default"
-				: "user";
-
-			$this->stream->writeLine(
-				"No build config found. Trying $whichPath path: $jsonPath",
-				Stream::ERROR
-			);
-			exit(1);
-		}
+		$jsonPath = $this->getJsonPath($workingDirectory);
 
 		$startTime = microtime(true);
 
@@ -76,6 +56,8 @@ class BuildRunner {
 		}
 		catch(JsonParseException $exception) {
 			$this->stream->writeLine("Syntax error in $jsonPath", Stream::ERROR);
+// TODO: Dynamic exit code https://github.com/PhpGt/Cli/issues/13
+// phpcs:ignore
 			exit(1);
 		}
 
@@ -88,6 +70,8 @@ class BuildRunner {
 			foreach($errors as $e) {
 				$this->stream->writeLine(" • " . $e);
 			}
+// TODO: Dynamic exit code https://github.com/PhpGt/Cli/issues/13
+// phpcs:ignore
 			exit(1);
 		}
 // Infinite loop while $continue is true. This allows for builds to take place
@@ -133,5 +117,32 @@ class BuildRunner {
 
 	public function setDefault(string $path):void {
 		$this->defaultPath = $path;
+	}
+
+	protected function getJsonPath(string $workingDirectory):string {
+		$jsonPath = $workingDirectory;
+		if(is_dir($jsonPath)) {
+			$jsonPath .= DIRECTORY_SEPARATOR;
+			$jsonPath .= "build.json";
+		}
+
+		if(!is_file($jsonPath)) {
+			$jsonPath = $this->defaultPath;
+		}
+		if(!is_file($jsonPath)) {
+			$whichPath = $jsonPath === $this->defaultPath
+				? "default"
+				: "user";
+
+			$this->stream->writeLine(
+				"No build config found. Trying $whichPath path: $jsonPath",
+				Stream::ERROR
+			);
+// TODO: Dynamic exit code https://github.com/PhpGt/Cli/issues/13
+// phpcs:ignore
+			exit(1);
+		}
+
+		return $jsonPath;
 	}
 }
