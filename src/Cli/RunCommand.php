@@ -11,7 +11,7 @@ class RunCommand extends Command {
 	public function run(ArgumentValueList $arguments = null):void {
 		$buildRunner = new BuildRunner(getcwd(), $this->stream);
 		if($arguments->contains("default")) {
-			$buildRunner->setDefault($arguments->get("default"));
+			$buildRunner->setDefaultPath($arguments->get("default"));
 		}
 		$buildRunner->run($arguments->contains("watch"));
 	}

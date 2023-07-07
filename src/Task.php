@@ -25,6 +25,7 @@ class Task {
 	 * @param object $taskBlock Details from the JSON data for this task
 	 * @param string $glob Path match for files to check for changes
 	 * @param string $basePath Path within project directory to check
+	 * @SuppressWarnings(PHPMD.StaticAccess)
 	 */
 	public function __construct(
 		TaskBlock $taskBlock
@@ -56,6 +57,7 @@ class Task {
 		}
 	}
 
+	/** @SuppressWarnings(PHPMD.StaticAccess) */
 	public function build(array &$errors = null):bool {
 		$hashMiss = false;
 
