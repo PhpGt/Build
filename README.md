@@ -8,10 +8,10 @@ This project provides a system for defining and running client-side build proces
 <a href="https://github.com/PhpGt/Build/actions" target="_blank">
 	<img src="https://badge.status.php.gt/build-build.svg" alt="Build status" />
 </a>
-<a href="https://scrutinizer-ci.com/g/PhpGt/Build" target="_blank">
+<a href="https://app.codacy.com/gh/PhpGt/Build" target="_blank">
 	<img src="https://badge.status.php.gt/build-quality.svg" alt="Code quality" />
 </a>
-<a href="https://scrutinizer-ci.com/g/PhpGt/Build" target="_blank">
+<a href="https://app.codecov.io/gh/PhpGt/Build" target="_blank">
 	<img src="https://badge.status.php.gt/build-coverage.svg" alt="Code coverage" />
 </a>
 <a href="https://packagist.org/packages/PhpGt/Build" target="_blank">
