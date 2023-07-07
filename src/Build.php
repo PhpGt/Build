@@ -18,7 +18,10 @@ class Build {
 		);
 	}
 
-	/** For each task, ensure all requirements are met. */
+	/**
+	 * For each task, ensure all requirements are met.
+	 * @SuppressWarnings(PHPMD.StaticAccess)
+	 */
 	public function check(array &$errors = null):int {
 		$count = 0;
 
@@ -32,7 +35,7 @@ class Build {
 				$task->check($errors);
 			}
 
-			$count ++;
+			$count++;
 		}
 
 		return $count;

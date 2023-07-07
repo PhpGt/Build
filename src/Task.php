@@ -25,6 +25,7 @@ class Task {
 	 * @param object $taskBlock Details from the JSON data for this task
 	 * @param string $glob Path match for files to check for changes
 	 * @param string $basePath Path within project directory to check
+	 * @SuppressWarnings(PHPMD.StaticAccess)
 	 */
 	public function __construct(
 		TaskBlock $taskBlock
@@ -56,6 +57,7 @@ class Task {
 		}
 	}
 
+	/** @SuppressWarnings(PHPMD.StaticAccess) */
 	public function build(array &$errors = null):bool {
 		$hashMiss = false;
 
@@ -157,10 +159,7 @@ class Task {
 			return false;
 		}
 
-		return
-			// Unix:
-			$path[0] === DIRECTORY_SEPARATOR
-			// Windows:
-			|| preg_match('~\A[A-Z]:(?![^/\\\\])~i',$path) > 0;
+		// Either unix path starts from "/" or Windows path starts with "X:\"
+		return $path[0] === DIRECTORY_SEPARATOR	|| preg_match('~\A[A-Z]:(?![^/\\\\])~i', $path) > 0;
 	}
 }
