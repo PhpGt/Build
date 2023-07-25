@@ -136,9 +136,15 @@ class BuildRunner {
 		}
 	}
 
-	protected function logMessage(string $message, string $severity = ''):void {
+	protected function logMessage(string $message, string $severity = null):void {
 		$message = date("Y-m-d H:i:s") . "\t" . $message;
-		$this->stream->writeLine($message, $severity);
+
+		if($severity) {
+			$this->stream->writeLine($message, $severity);
+		}
+		else {
+			$this->stream->writeLine($message);
+		}
 	}
 
 	protected function showErrors(array $errors): void {
