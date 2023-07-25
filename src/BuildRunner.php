@@ -136,7 +136,7 @@ class BuildRunner {
 		}
 	}
 
-	protected function logMessage(string $message, string $severity = ''):void {
+	protected function logMessage(string $message, string $severity = Stream::OUT):void {
 		$message = date("Y-m-d H:i:s") . "\t" . $message;
 		$this->stream->writeLine($message, $severity);
 	}
