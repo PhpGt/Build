@@ -35,4 +35,24 @@ class ManifestTest extends TestCase {
 			next($jsonObj);
 		}
 	}
+
+	public function testIterator_modeOnlyOverridesSingleProperty():void {
+		$jsonFile = "test/phpunit/Helper/Json/build.json";
+		$jsonObj = json_decode(file_get_contents($jsonFile), true);
+
+		$sut = new Manifest($jsonFile, "single-property-override");
+		/** @var TaskBlock $taskBlock */
+		foreach($sut as $taskBlock) {
+			$currentJsonObj = current($jsonObj);
+			self::assertSame($currentJsonObj["name"], $taskBlock->getName());
+
+			if($currentJsonObj["name"] === "Example dev TXT") {
+				self::assertSame(["hello", "text", "single", "property"], $taskBlock->getExecuteBlock()->arguments);
+			}
+			else {
+				self::assertSame($currentJsonObj["execute"]["arguments"], $taskBlock->getExecuteBlock()->arguments);
+			}
+			next($jsonObj);
+		}
+	}
 }

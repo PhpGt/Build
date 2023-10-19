@@ -41,7 +41,7 @@ class Manifest implements Iterator {
 // For legacy reasons, stdClass is used to represent the block details.
 // This code might look weird, but it remains backwards compatible until an OOP
 // refactoring is made.
-			$json = (object)array_merge((array)$json, (array)$modeJson);
+			$json = $this->recursiveMerge($json, $modeJson);
 		}
 
 		$this->taskBlockList = [];
@@ -83,5 +83,23 @@ class Manifest implements Iterator {
 	protected function setIteratorKey():void {
 		$keys = array_keys($this->taskBlockList);
 		$this->iteratorKey = $keys[$this->iteratorIndex] ?? null;
+	}
+
+	private function recursiveMerge(object $json, object $diff):object {
+		foreach($diff as $key => $value) {
+			if(property_exists($json, $key)) {
+				if(is_object($value)) {
+					$json->$key = $this->recursiveMerge($json->$key, $value);
+				}
+				else {
+					$json->$key = $value;
+				}
+			}
+			else {
+				$json->$key = $value;
+			}
+		}
+
+		return $json;
 	}
 }

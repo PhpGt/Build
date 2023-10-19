@@ -1,0 +1,7 @@
+{
+	"/tmp/phpgt/build/*.txt": {
+		"execute": {
+			"arguments": ["hello", "text", "single", "property"]
+		}
+	}
+}
