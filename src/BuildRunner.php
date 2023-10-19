@@ -29,7 +29,10 @@ class BuildRunner {
 	}
 
 	/** @SuppressWarnings(PHPMD.ExitExpression) */
-	public function run(bool $continue = true):void {
+	public function run(
+		bool $continue = true,
+		?string $mode = null
+	):void {
 		$workingDirectory = $this->formatWorkingDirectory();
 		$jsonPath = $this->getJsonPath($workingDirectory);
 
@@ -40,7 +43,7 @@ class BuildRunner {
 // reference will suppress exceptions, instead filling the array with error
 // strings for output back to the terminal.
 		$errors = [];
-		$build = $this->checkRequirements($jsonPath, $workingDirectory, $errors);
+		$build = $this->checkRequirements($jsonPath, $workingDirectory, $errors, $mode);
 
 		if(!empty($errors)) {
 			$this->showErrors($errors);
@@ -92,11 +95,17 @@ class BuildRunner {
 	}
 
 	/** @SuppressWarnings(PHPMD.ExitExpression) */
-	protected function checkRequirements(string $jsonPath, string $workingDirectory, array $errors):Build {
+	protected function checkRequirements(
+		string $jsonPath,
+		string $workingDirectory,
+		array $errors,
+		?string $mode
+	):Build {
 		try {
 			$build = new Build(
 				$jsonPath,
-				$workingDirectory
+				$workingDirectory,
+				$mode,
 			);
 		} catch(JsonParseException $exception) {
 			$this->stream->writeLine("Syntax error in $jsonPath", Stream::ERROR);

@@ -26,6 +26,9 @@ class TaskBlock {
 			$this->require = null;
 		}
 
+		if(is_null($details->execute)) {
+			throw new MissingConfigurationKeyException("execute");
+		}
 		$this->execute = new ExecuteBlock($details->execute);
 		$this->name = $details->name ?? $this->execute->command;
 	}

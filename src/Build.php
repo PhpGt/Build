@@ -10,11 +10,13 @@ class Build {
 
 	public function __construct(
 		string $jsonFilePath,
-		string $workingDirectory
+		string $workingDirectory,
+		?string $mode = null
 	) {
 		$this->taskList = new TaskList(
 			$jsonFilePath,
-			$workingDirectory
+			$workingDirectory,
+			$mode,
 		);
 	}
 

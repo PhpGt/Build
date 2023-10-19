@@ -1,0 +1,10 @@
+{
+	"/tmp/phpgt/build/*.txt": {
+		"name": "Example other mode TXT",
+		"require": {},
+		"execute": {
+			"command": "echo",
+			"arguments": ["hello", "text", "other"]
+		}
+	}
+}

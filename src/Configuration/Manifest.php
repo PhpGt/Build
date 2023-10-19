@@ -17,7 +17,7 @@ class Manifest implements Iterator {
 	/** @var int Numerical index to use in iteration */
 	protected $iteratorIndex;
 
-	public function __construct(string $jsonFilePath) {
+	public function __construct(string $jsonFilePath, ?string $mode = null) {
 		if(!is_file($jsonFilePath)) {
 			throw new MissingBuildFileException($jsonFilePath);
 		}
@@ -25,6 +25,23 @@ class Manifest implements Iterator {
 		$json = json_decode(file_get_contents($jsonFilePath));
 		if(is_null($json)) {
 			throw new JsonParseException(json_last_error_msg());
+		}
+
+		if($mode) {
+			$modeJsonFilePath = substr(
+				$jsonFilePath,
+				0,
+				-strlen(".json"),
+			);
+			$modeJsonFilePath .= ".$mode.json";
+			if(!is_file($modeJsonFilePath)) {
+				throw new MissingBuildFileException($modeJsonFilePath);
+			}
+			$modeJson = json_decode(file_get_contents($modeJsonFilePath));
+// For legacy reasons, stdClass is used to represent the block details.
+// This code might look weird, but it remains backwards compatible until an OOP
+// refactoring is made.
+			$json = (object)array_merge((array)$json, (array)$modeJson);
 		}
 
 		$this->taskBlockList = [];

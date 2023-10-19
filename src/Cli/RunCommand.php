@@ -13,7 +13,10 @@ class RunCommand extends Command {
 		if($arguments->contains("default")) {
 			$buildRunner->setDefaultPath($arguments->get("default"));
 		}
-		$buildRunner->run($arguments->contains("watch"));
+		$buildRunner->run(
+			$arguments->contains("watch"),
+			$arguments->get("mode"),
+		);
 	}
 
 	public function getName():string {
@@ -59,6 +62,12 @@ class RunCommand extends Command {
 				"default",
 				"d",
 				"Path to a default build.json to use if there is no build.json in the project root."
+			),
+			new Parameter(
+				true,
+				"mode",
+				"m",
+				"Which version of build.json to build (e.g. production/development)."
 			),
 		];
 	}

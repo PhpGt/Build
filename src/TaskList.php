@@ -12,12 +12,16 @@ class TaskList implements Iterator {
 	/** @var int Numerical index to use in iteration */
 	protected $iteratorIndex;
 
-	public function __construct(string $jsonFilePath, string $baseDir = null) {
+	public function __construct(
+		string $jsonFilePath,
+		?string $baseDir = null,
+		?string $mode = null
+	) {
 		if(is_null($baseDir)) {
 			$baseDir = dirname($jsonFilePath);
 		}
 
-		$specification = new Manifest($jsonFilePath);
+		$specification = new Manifest($jsonFilePath, $mode);
 		foreach($specification as $glob => $taskBlock) {
 			$this->taskList[$glob] = new Task($taskBlock);
 		}
